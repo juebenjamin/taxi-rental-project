@@ -78,5 +78,5 @@ Django application implementing the requirements for the college course project.
 
 - **Manager:** CRUD for Drivers, Cars, Models. All 9 reports (including group-of-4).
 - **Driver:** Update address, view all models, declare drivable models.
-- **Client:** Register (basic for demo), search available models, book rent (arbitrary or best driver), view rents, write reviews (with check).
+- **Client:** Register (basic for demo), search available models, book rent (arbitrary or best driver), view rents, write reviews.
 - **Modern UI:** Uses Bootstrap 5 for styling.
