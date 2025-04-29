@@ -15,7 +15,7 @@ Django application implementing the requirements for the college course project.
 2.  **Clone the Repository (Optional):**
 
     ```bash
-    git clone [<your-repo-url>](https://github.com/juebenjamin/taxi-rental-project.git)
+    git clon https://github.com/juebenjamin/taxi-rental-project.git
     cd taxi_rental_project
     ```
 
