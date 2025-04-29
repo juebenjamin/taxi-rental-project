@@ -1,6 +1,6 @@
 # Taxi Rental Management Application (Phase 3)
 
-Django application implementing the requirements for the college course project.
+Django application implementing the requirements for the CS 480: Database Systems course project.
 
 **Members:** Jeremiah B., Ele B., Matthew J., Maryann O.
 
