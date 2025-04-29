@@ -43,7 +43,7 @@ Django application implementing the requirements for the CS 480: Database System
     - Create a database user/role with privileges on the database (e.g., `taxi_user` with password `password`).
     - Create a `.env` file in the project root (`taxi_rental_project/`) with your database connection string:
       ```.env
-      DATABASE_URL=postgres://taxi_user:password@localhost:5432/taxi_rental
+      DATABASE_URL=postgres://taxi_user:password@localhost:5433/taxi_rental
       DJANGO_SECRET_KEY=your-very-secret-key-here # Generate a strong secret key
       DJANGO_DEBUG=True # Set to False in production
       # DJANGO_ALLOWED_HOSTS=yourdomain.com,localhost # Adjust for deployment
