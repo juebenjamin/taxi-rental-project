@@ -54,7 +54,7 @@ Django application implementing the requirements for the CS 480: Database System
       # Replace 'taxi_user', 'taxi_rental' with your actual user/db if different
       psql -U taxi_user -d taxi_rental -p 5433 -f taxi_rental_schema.sql
       ```
-      _(Note: Django migrations are not used here as the schema is provided externally)_
+      _(Note: Django migrations are not used here as the schema is provided externally via Phase 2 of the Project)_
 
 6.  **Run the Development Server:**
 
