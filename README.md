@@ -72,7 +72,7 @@ Django application implementing the requirements for the college course project.
   - Manually add a Manager via SQL or the Django admin (if enabled).
   - Use the application to register Clients (or add via SQL/admin).
   - Use the Manager interface to add Drivers, Cars, and Models.
-  - (Optional) Create a `seed_data.py` script using Django's shell or management commands to populate initial data for easier demoing.
+  - (Optional -- For demoing purposes) Create a `seed_data.py` script using Django's shell or management commands to populate initial data for easier demoing.
 
 ## Key Features Implemented
 
