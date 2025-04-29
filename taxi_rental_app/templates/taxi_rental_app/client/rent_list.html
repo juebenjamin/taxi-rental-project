@@ -1,0 +1,45 @@
+{% extends 'taxi_rental_app/base.html' %}
+{% load django_bootstrap5 %}
+
+{% block title %}My Rents{% endblock %}
+
+{% block content %}
+<h2>My Rents</h2>
+
+{% if rents %}
+<table class="table table-striped">
+    <thead>
+        <tr>
+            <th>Rent ID</th>
+            <th>Date</th>
+            <th>Model</th>
+            <th>Driver</th>
+            <th>Review</th>
+        </tr>
+    </thead>
+    <tbody>
+        {% for rent in rents %}
+        <tr>
+            <td>{{ rent.rent_id }}</td>
+            <td>{{ rent.rent_date }}</td>
+            <td>{{ rent.model }}</td>
+            <td>{{ rent.driver.name }}</td>
+            <td>
+                {% if rent.driver.name in rented_driver_names %}
+                    {# Check if a review already exists for this specific rent/driver (more complex logic needed if multiple reviews allowed) #}
+                    {# Simple check: Can they review this driver? Yes. Have they? Maybe #}
+                    <a href="{% url 'taxi_rental_app:client_write_review' client_email=client.email driver_name=rent.driver.name %}" class="btn btn-sm btn-outline-success">Write/View Review</a>
+                    {# To prevent multiple reviews for same rent, check if a review exists matching rent.pk or client/driver/date #}
+                {% else %}
+                    <span class="text-muted">-</span>
+                {% endif %}
+            </td>
+        </tr>
+        {% endfor %}
+    </tbody>
+</table>
+{% else %}
+<p>You haven't booked any rents yet.</p>
+<a href="{% url 'taxi_rental_app:client_search_available' client_email=client.email %}" class="btn btn-primary">Book Your First Rent</a>
+{% endif %}
+{% endblock %}

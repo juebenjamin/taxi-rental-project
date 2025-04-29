@@ -1,0 +1,38 @@
+{% extends 'taxi_rental_app/base.html' %}
+{% load django_bootstrap5 %}
+
+{% block title %}Manage Car Brands{% endblock %}
+
+{% block content %}
+<div class="d-flex justify-content-between align-items-center mb-3">
+    <h2>Manage Car Brands</h2>
+    <a href="{% url 'taxi_rental_app:manager_car_create' %}" class="btn btn-primary">Add New Brand</a>
+</div>
+
+{% if cars %}
+<table class="table table-striped table-hover">
+    <thead>
+        <tr>
+            <th>Brand Name</th>
+            <th>Actions</th>
+        </tr>
+    </thead>
+    <tbody>
+        {% for car in cars %}
+        <tr>
+            <td>{{ car.brand }}</td>
+            <td>
+                <a href="{% url 'taxi_rental_app:manager_car_update' pk=car.pk %}" class="btn btn-sm btn-warning me-1">Edit</a>
+                <form action="{% url 'taxi_rental_app:manager_car_delete' pk=car.pk %}" method="post" class="d-inline">
+                    {% csrf_token %}
+                    <button type="submit" class="btn btn-sm btn-danger" onclick="return confirm('Are you sure you want to delete {{ car.brand }}? This might fail if models exist.');">Delete</button>
+                </form>
+            </td>
+        </tr>
+        {% endfor %}
+    </tbody>
+</table>
+{% else %}
+<p>No car brands found.</p>
+{% endif %}
+{% endblock %}

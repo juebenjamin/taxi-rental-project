@@ -1,0 +1,16 @@
+{% extends 'taxi_rental_app/base.html' %}
+{% load django_bootstrap5 %}
+
+{% block title %}Book a Rent{% endblock %}
+
+{% block content %}
+<h2>Find Available Cars</h2>
+<p>Select a date to see available car models.</p>
+
+<form method="get" class="row g-3 align-items-end">
+    {% csrf_token %} {# Although GET, good practice #}
+    {% bootstrap_form search_form layout='inline' %}
+    {% bootstrap_button button_type="submit" content="Find Available Models" %}
+</form>
+
+{% endblock %}

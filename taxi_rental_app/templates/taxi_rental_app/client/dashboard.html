@@ -1,0 +1,39 @@
+{% extends 'taxi_rental_app/base.html' %}
+{% load django_bootstrap5 %}
+
+{% block title %}Client Dashboard - {{ client.name }}{% endblock %}
+
+{% block content %}
+<h2>Client Dashboard</h2>
+<p>Welcome, {{ client.name }} ({{ client.email }})!</p>
+
+<div class="row g-3">
+    <div class="col-md-6">
+        <div class="card">
+          <div class="card-header">Actions</div>
+          <div class="card-body">
+            <a href="{% url 'taxi_rental_app:client_search_available' client_email=client.email %}" class="btn btn-primary mb-2">Book a New Rent</a> <br>
+            <a href="{% url 'taxi_rental_app:client_rent_list' client_email=client.email %}" class="btn btn-secondary">View My Rents & Reviews</a>
+            <!-- Add links to manage profile/addresses/cards if implemented -->
+          </div>
+        </div>
+    </div>
+    <div class="col-md-6">
+         <div class="card">
+            <div class="card-header">Recent Activity</div>
+            <div class="card-body">
+                {% if recent_rents %}
+                    <ul class="list-unstyled">
+                    {% for rent in recent_rents %}
+                        <li><strong>{{ rent.rent_date }}:</strong> Rent #{{rent.rent_id}} with {{ rent.driver.name }} ({{ rent.model.car.brand }})</li>
+                    {% endfor %}
+                    </ul>
+                {% else %}
+                    <p>No recent rent history.</p>
+                {% endif %}
+            </div>
+        </div>
+    </div>
+</div>
+
+{% endblock %}

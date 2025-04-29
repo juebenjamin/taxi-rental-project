@@ -1,0 +1,19 @@
+{% extends 'taxi_rental_app/base.html' %}
+{% load django_bootstrap5 %}
+
+{% block title %}Book a Rent for {{ rent_date }}{% endblock %}
+
+{% block content %}
+<h2>Book a Rent for {{ rent_date }}</h2>
+
+<p>The following models are available. Select one and choose your driver preference.</p>
+
+<form method="post" action="{% url 'taxi_rental_app:client_book_rent' client_email=client.email %}">
+    {% csrf_token %}
+    {% bootstrap_form book_form %}
+    <small class="d-block mb-3 text-muted">Note: If you select 'Best Driver', the system will assign the available driver with the highest average rating for the selected model. Otherwise, an arbitrary available driver will be assigned.</small>
+    {% bootstrap_button button_type="submit" content="Book Rent" %}
+    <a href="{% url 'taxi_rental_app:client_search_available' client_email=client.email %}" class="btn btn-secondary">Change Date</a>
+</form>
+
+{% endblock %}

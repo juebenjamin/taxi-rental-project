@@ -1,0 +1,108 @@
+<!doctype html>
+<html lang="en" data-bs-theme="auto">
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>{% block title %}Taxi Rental Management{% endblock %}</title>
+    {% load static %}
+    {% load django_bootstrap5 %}
+    {% bootstrap_css %}
+    <link rel="stylesheet" href="{% static 'taxi_rental_app/css/custom.css' %}">
+
+    <!-- Theme switcher (optional) -->
+    <script>
+      // Simple theme switcher based on Bootstrap examples
+      const getStoredTheme = () => localStorage.getItem('theme')
+      const setStoredTheme = theme => localStorage.setItem('theme', theme)
+      const getPreferredTheme = () => {
+        const storedTheme = getStoredTheme()
+        if (storedTheme) { return storedTheme }
+        return window.matchMedia('(prefers-color-scheme: dark)').matches ? 'dark' : 'light'
+      }
+      const setTheme = theme => {
+        document.documentElement.setAttribute('data-bs-theme', theme)
+      }
+      setTheme(getPreferredTheme())
+      window.addEventListener('DOMContentLoaded', () => {
+        document.querySelectorAll('[data-bs-theme-value]').forEach(toggle => {
+          toggle.addEventListener('click', () => {
+            const theme = toggle.getAttribute('data-bs-theme-value')
+            setStoredTheme(theme)
+            setTheme(theme)
+          })
+        })
+      })
+    </script>
+</head>
+<body>
+    <nav class="navbar navbar-expand-lg navbar-dark bg-dark mb-4">
+        <div class="container">
+            <a class="navbar-brand" href="{% url 'taxi_rental_app:index' %}">
+                <!-- Optional Logo -->
+                <!-- <img src="{% static 'taxi_rental_app/img/logo.png' %}" alt="Logo" width="30" height="24" class="d-inline-block align-text-top"> -->
+                Taxi Rentals Inc.
+            </a>
+            <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav" aria-controls="navbarNav" aria-expanded="false" aria-label="Toggle navigation">
+                <span class="navbar-toggler-icon"></span>
+            </button>
+            <div class="collapse navbar-collapse" id="navbarNav">
+                <ul class="navbar-nav me-auto mb-2 mb-lg-0">
+                    <li class="nav-item">
+                        <a class="nav-link active" aria-current="page" href="{% url 'taxi_rental_app:index' %}">Home</a>
+                    </li>
+                    {% if current_role == 'manager' %}
+                        <li class="nav-item"><a class="nav-link" href="{% url 'taxi_rental_app:manager_dashboard' %}">Manager Dashboard</a></li>
+                        <!-- Add other manager links -->
+                    {% elif current_role == 'driver' and current_user %}
+                        <li class="nav-item"><a class="nav-link" href="{% url 'taxi_rental_app:driver_dashboard' driver_name=current_user.pk %}">Driver Dashboard</a></li>
+                         <!-- Add other driver links -->
+                    {% elif current_role == 'client' and current_user %}
+                         <li class="nav-item"><a class="nav-link" href="{% url 'taxi_rental_app:client_dashboard' client_email=current_user.pk %}">Client Dashboard</a></li>
+                          <!-- Add other client links -->
+                    {% endif %}
+                </ul>
+                <ul class="navbar-nav ms-auto">
+                    {% if current_role %}
+                        <li class="nav-item"><span class="navbar-text me-3">Welcome, {{ current_user }} ({{ current_role|title }})</span></li>
+                        <li class="nav-item">
+                            <form action="{% url 'taxi_rental_app:logout' %}" method="post" class="d-inline">
+                                {% csrf_token %}
+                                <button type="submit" class="btn btn-outline-secondary btn-sm">Logout</button>
+                            </form>
+                        </li>
+                    {% else %}
+                         <li class="nav-item"><a class="btn btn-outline-primary btn-sm" href="{% url 'taxi_rental_app:login' %}">Login</a></li>
+                         <li class="nav-item ms-2"><a class="btn btn-primary btn-sm" href="{% url 'taxi_rental_app:register_client' %}">Register Client</a></li>
+                         <!-- Add link for Manager registration if needed -->
+                    {% endif %}
+                </ul>
+            </div>
+        </div>
+    </nav>
+
+    <!-- Bootstrap theme switcher SVG icons -->
+    <svg xmlns="http://www.w3.org/2000/svg" style="display: none;">
+      <symbol id="check2" viewBox="0 0 16 16"><path d="M13.854 3.646a.5.5 0 0 1 0 .708l-7 7a.5.5 0 0 1-.708 0l-3.5-3.5a.5.5 0 1 1 .708-.708L6.5 10.293l6.646-6.647a.5.5 0 0 1 .708 0z"/></symbol>
+      <symbol id="circle-half" viewBox="0 0 16 16"><path d="M8 15A7 7 0 1 0 8 1v14zm0 1A8 8 0 1 1 8 0a8 8 0 0 1 0 16z"/></symbol>
+      <symbol id="moon-stars-fill" viewBox="0 0 16 16"><path d="M6 .278a.768.768 0 0 1 .08.858 7.208 7.208 0 0 0-.878 3.46c0 4.021 3.278 7.277 7.318 7.277.527 0 1.04-.055 1.533-.16a.787.787 0 0 1 .81.316.733.733 0 0 1-.031.893A8.349 8.349 0 0 1 8.344 16C3.734 16 0 12.286 0 7.71 0 4.266 2.114 1.312 5.124.06A.752.752 0 0 1 6 .278z"/><path d="M10.794 3.148a.217.217 0 0 1 .412 0l.387 1.162h1.211a.217.217 0 0 1 .134.386l-.979.894.447 1.447a.217.217 0 0 1-.316.242l-1.118-.796-1.118.796a.217.217 0 0 1-.316-.242l.447-1.447-.979-.894a.217.217 0 0 1 .134-.386h1.211l.387-1.162zM13.863.099a.145.145 0 0 1 .274 0l.258.774c.115.346.386.617.732.732l.774.258a.145.145 0 0 1 0 .274l-.774.258a.752.752 0 0 0-.732.732l-.258.774a.145.145 0 0 1-.274 0l-.258-.774a.752.752 0 0 0-.732-.732l-.774-.258a.145.145 0 0 1 0-.274l.774-.258c.346-.115.617-.386.732-.732L13.863.1z"/></symbol>
+      <symbol id="sun-fill" viewBox="0 0 16 16"><path d="M8 12a4 4 0 1 0 0-8 4 4 0 0 0 0 8zM8 0a.5.5 0 0 1 .5.5v2a.5.5 0 0 1-1 0v-2A.5.5 0 0 1 8 0zm0 13a.5.5 0 0 1 .5.5v2a.5.5 0 0 1-1 0v-2A.5.5 0 0 1 8 13zm8-5a.5.5 0 0 1-.5.5h-2a.5.5 0 0 1 0-1h2a.5.5 0 0 1 .5.5zM3 8a.5.5 0 0 1-.5.5h-2a.5.5 0 0 1 0-1h2A.5.5 0 0 1 3 8zm10.657-5.657a.5.5 0 0 1 0 .707l-1.414 1.415a.5.5 0 1 1-.707-.708l1.414-1.414a.5.5 0 0 1 .707 0zm-9.193 9.193a.5.5 0 0 1 0 .707L3.05 13.657a.5.5 0 0 1-.707-.707l1.414-1.414a.5.5 0 0 1 .707 0zm9.193 2.121a.5.5 0 0 1-.707 0l-1.414-1.414a.5.5 0 0 1 .707-.707l1.414 1.414a.5.5 0 0 1 0 .707zM4.464 4.465a.5.5 0 0 1-.707 0L2.343 3.05a.5.5 0 1 1 .707-.707l1.414 1.414a.5.5 0 0 1 0 .708z"/></symbol>
+    </svg>
+
+    <main class="container mt-4">
+        {% bootstrap_messages %}
+
+        {% block content %}
+        <!-- Page specific content goes here -->
+        {% endblock %}
+    </main>
+
+    <footer class="footer mt-auto py-3 bg-light">
+        <div class="container text-center">
+            <span class="text-muted">© {% now "Y" %} Taxi Rental Management - Jeremiah B., Maryann O., Matthew J., Ele B.</span>
+        </div>
+    </footer>
+
+    {% bootstrap_javascript %}
+    {% block extra_js %}{% endblock %}
+</body>
+</html>

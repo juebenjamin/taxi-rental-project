@@ -1,0 +1,58 @@
+{% extends 'taxi_rental_app/base.html' %}
+{% load django_bootstrap5 %}
+
+{% block title %}Driver Dashboard - {{ driver.name }}{% endblock %}
+
+{% block content %}
+<h2>Driver Dashboard</h2>
+<p>Welcome, {{ driver.name }}!</p>
+
+<div class="row g-3">
+    <div class="col-md-6">
+        <div class="card">
+            <div class="card-header">Your Information</div>
+            <div class="card-body">
+                <p><strong>Name:</strong> {{ driver.name }}</p>
+                <p><strong>Address:</strong> {{ driver.address }}</p>
+                <p><strong>Average Rating:</strong> {{ avg_rating }}</p>
+                <a href="{% url 'taxi_rental_app:driver_update_address' driver_name=driver.name %}" class="btn btn-sm btn-outline-primary">Update Address</a>
+            </div>
+        </div>
+    </div>
+     <div class="col-md-6">
+        <div class="card">
+            <div class="card-header">Drivable Models</div>
+            <div class="card-body">
+                <p>Manage the car models you are certified to drive.</p>
+                <a href="{% url 'taxi_rental_app:driver_model_list' driver_name=driver.name %}" class="btn btn-sm btn-outline-secondary me-2">View All Models</a>
+                <a href="{% url 'taxi_rental_app:driver_update_drives' driver_name=driver.name %}" class="btn btn-sm btn-outline-primary">Update My Certifications</a>
+            </div>
+        </div>
+    </div>
+</div>
+
+<h3 class="mt-4">Upcoming Rents</h3>
+{% if upcoming_rents %}
+<table class="table table-sm table-striped">
+    <thead>
+        <tr>
+            <th>Date</th>
+            <th>Client</th>
+            <th>Model</th>
+        </tr>
+    </thead>
+    <tbody>
+        {% for rent in upcoming_rents %}
+        <tr>
+            <td>{{ rent.rent_date }}</td>
+            <td>{{ rent.client.name }} ({{ rent.client.email }})</td>
+            <td>{{ rent.model }}</td>
+        </tr>
+        {% endfor %}
+    </tbody>
+</table>
+{% else %}
+<p>No upcoming rents scheduled.</p>
+{% endif %}
+
+{% endblock %}

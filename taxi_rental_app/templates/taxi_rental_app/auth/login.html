@@ -1,0 +1,56 @@
+{% extends 'taxi_rental_app/base.html' %}
+{% load django_bootstrap5 %}
+
+{% block title %}Login / Select Role{% endblock %}
+
+{% block content %}
+<h2>Login / Select Role (Demo)</h2>
+<p class="text-muted">Select your role and enter the corresponding identifier (SSN for Manager, Email for Client, Name for Driver) to simulate login.</p>
+
+<form method="post" action="{% url 'taxi_rental_app:login' %}">
+    {% csrf_token %}
+    <div class="mb-3">
+        <label for="roleSelect" class="form-label">Select Role</label>
+        <select class="form-select" id="roleSelect" name="role" required>
+            <option value="" selected disabled>-- Select Role --</option>
+            <option value="manager">Manager</option>
+            <option value="client">Client</option>
+            <option value="driver">Driver</option>
+        </select>
+    </div>
+
+    <div class="mb-3">
+        <label for="identifierInput" class="form-label">Identifier</label>
+        <input type="text" class="form-control" id="identifierInput" name="identifier"
+               placeholder="Enter SSN (Manager), Email (Client), or Name (Driver)" required>
+        <small id="identifierHelp" class="form-text text-muted">
+            Use an existing identifier from the database.
+        </small>
+        </div>
+
+     <!-- Optional: Display existing users for easy testing -->
+     <div class="row mt-4">
+         <div class="col-md-4">
+             <h6>Available Managers (SSN)</h6>
+             <ul>
+                 {% for mgr in managers %}<li>{{ mgr.ssn }} ({{ mgr.name }})</li>{% empty %}<li>No managers found.</li>{% endfor %}
+             </ul>
+         </div>
+         <div class="col-md-4">
+             <h6>Available Clients (Email)</h6>
+              <ul>
+                 {% for cli in clients %}<li>{{ cli.email }} ({{ cli.name }})</li>{% empty %}<li>No clients found.</li>{% endfor %}
+             </ul>
+         </div>
+         <div class="col-md-4">
+             <h6>Available Drivers (Name)</h6>
+              <ul>
+                 {% for drv in drivers %}<li>{{ drv.name }}</li>{% empty %}<li>No drivers found.</li>{% endfor %}
+             </ul>
+         </div>
+     </div>
+
+
+    <button type="submit" class="btn btn-primary">Login</button>
+</form>
+{% endblock %}

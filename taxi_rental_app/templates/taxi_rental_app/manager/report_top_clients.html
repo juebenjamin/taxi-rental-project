@@ -1,0 +1,44 @@
+{% extends 'taxi_rental_app/base.html' %}
+{% load django_bootstrap5 %}
+
+{% block title %}Top K Clients Report{% endblock %}
+
+{% block content %}
+<h2>Top K Clients by Number of Rents</h2>
+
+<form method="get" class="row g-3 align-items-center mb-4">
+    {% bootstrap_form form layout='inline' %}
+    {% bootstrap_button button_type="submit" content="Generate Report" %}
+</form>
+
+{% if clients_data is not None %}
+    {% if clients_data %}
+        <h3>Top {{ clients_data|length }} Client{{ clients_data|length|pluralize }}</h3>
+        <table class="table table-sm table-hover">
+            <thead>
+                <tr>
+                    <th>Rank</th>
+                    <th>Client Name</th>
+                    <th>Email</th>
+                    <th>Number of Rents</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for client in clients_data %}
+                <tr>
+                    <td>{{ forloop.counter }}</td>
+                    <td>{{ client.name }}</td>
+                    <td>{{ client.email }}</td>
+                    <td>{{ client.rent_count }}</td>
+                </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    {% else %}
+         <div class="alert alert-warning" role="alert">
+           No clients found matching the criteria (or no clients have booked rents).
+         </div>
+    {% endif %}
+{% endif %} {# End clients_data is not None check #}
+
+{% endblock %}

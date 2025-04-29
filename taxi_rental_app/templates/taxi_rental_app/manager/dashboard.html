@@ -1,0 +1,65 @@
+{% extends 'taxi_rental_app/base.html' %}
+{% block title %}Manager Dashboard{% endblock %}
+
+{% block content %}
+<h2>Manager Dashboard</h2>
+<p>Welcome, {{ manager.name }}!</p>
+
+<div class="row g-3">
+    <!-- Info Cards -->
+    <div class="col-md-4">
+        <div class="card text-white bg-primary mb-3">
+          <div class="card-header">Drivers</div>
+          <div class="card-body">
+            <h5 class="card-title">{{ num_drivers }}</h5>
+            <p class="card-text">Total registered drivers.</p>
+            <a href="{% url 'taxi_rental_app:manager_driver_list' %}" class="btn btn-light btn-sm">Manage Drivers</a>
+          </div>
+        </div>
+    </div>
+     <div class="col-md-4">
+        <div class="card text-white bg-success mb-3">
+          <div class="card-header">Clients</div>
+          <div class="card-body">
+            <h5 class="card-title">{{ num_clients }}</h5>
+            <p class="card-text">Total registered clients.</p>
+             <!-- Add link to manage clients if needed -->
+          </div>
+        </div>
+    </div>
+     <div class="col-md-4">
+        <div class="card text-dark bg-warning mb-3">
+          <div class="card-header">Vehicles</div>
+          <div class="card-body">
+            <h5 class="card-title">{{ num_cars }} Brands / {{ num_models }} Models</h5>
+            <p class="card-text">Total car brands and models.</p>
+            <a href="{% url 'taxi_rental_app:manager_car_list' %}" class="btn btn-dark btn-sm me-1">Manage Brands</a>
+            <a href="{% url 'taxi_rental_app:manager_model_list' %}" class="btn btn-dark btn-sm">Manage Models</a>
+          </div>
+        </div>
+    </div>
+     <div class="col-md-4">
+        <div class="card text-white bg-info mb-3">
+          <div class="card-header">Rents</div>
+          <div class="card-body">
+            <h5 class="card-title">{{ num_rents }}</h5>
+            <p class="card-text">Total rents booked.</p>
+             <!-- Add link to view all rents if needed -->
+          </div>
+        </div>
+    </div>
+    <!-- Add more cards as needed -->
+</div>
+
+
+<h3 class="mt-5">Reports & Statistics</h3>
+<div class="list-group">
+  <a href="{% url 'taxi_rental_app:manager_report_top_clients' %}" class="list-group-item list-group-item-action">Top K Clients by Rents</a>
+  <a href="{% url 'taxi_rental_app:manager_report_model_usage' %}" class="list-group-item list-group-item-action">Car Model Usage Count</a>
+  <a href="{% url 'taxi_rental_app:manager_report_driver_stats' %}" class="list-group-item list-group-item-action">Driver Rent & Rating Statistics</a>
+  <a href="{% url 'taxi_rental_app:manager_report_cross_city' %}" class="list-group-item list-group-item-action">Cross-City Client/Driver Report</a>
+  <a href="{% url 'taxi_rental_app:manager_report_problematic_drivers' %}" class="list-group-item list-group-item-action list-group-item-danger">Problematic Local Drivers (Chicago) <span class="badge bg-secondary">Group of 4</span></a>
+  <a href="{% url 'taxi_rental_app:manager_report_brand_summary' %}" class="list-group-item list-group-item-action">Car Brand Summary Report <span class="badge bg-secondary">Group of 4</span></a>
+</div>
+
+{% endblock %}

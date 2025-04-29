@@ -1,0 +1,18 @@
+{% extends 'taxi_rental_app/base.html' %}
+{% load django_bootstrap5 %}
+
+{% block title %}Confirm Deletion{% endblock %}
+
+{% block content %}
+<h2>Confirm Deletion</h2>
+<p>Are you sure you want to delete the {{ object_type }}: <strong>{{ object }}</strong>?</p>
+<p class="text-danger">This action cannot be undone. Deletion might fail if this item is referenced elsewhere (e.g., in rents, certifications).</p>
+
+<form method="post">
+    {% csrf_token %}
+    {% bootstrap_button button_type="submit" button_class="btn-danger" content="Yes, Delete" %}
+    <a href="{{ request.META.HTTP_REFERER|escape }}" class="btn btn-secondary">Cancel</a>
+     <!-- Or link back to the specific list page -->
+     <!-- <a href="{% url 'taxi_rental_app:manager_car_list' %}" class="btn btn-secondary">Cancel</a> -->
+</form>
+{% endblock %}

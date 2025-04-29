@@ -1,0 +1,34 @@
+{% extends 'taxi_rental_app/base.html' %}
+{% load django_bootstrap5 %}
+
+{% block title %}Welcome{% endblock %}
+
+{% block content %}
+<div class="px-4 py-5 my-5 text-center">
+    <!-- Optional Logo -->
+    <!-- <img class="d-block mx-auto mb-4" src="/docs/5.3/assets/brand/bootstrap-logo.svg" alt="" width="72" height="57"> -->
+    <h1 class="display-5 fw-bold text-body-emphasis">Taxi Rental Management</h1>
+    <div class="col-lg-6 mx-auto">
+      <p class="lead mb-4">Manage drivers, cars, and rentals. Book your next ride with ease.</p>
+      <div class="d-grid gap-2 d-sm-flex justify-content-sm-center">
+        {% if not current_role %}
+            <a href="{% url 'taxi_rental_app:login' %}" class="btn btn-primary btn-lg px-4 gap-3">Login / Select Role</a>
+            <a href="{% url 'taxi_rental_app:register_client' %}" class="btn btn-outline-secondary btn-lg px-4">Register as Client</a>
+        {% elif current_role == 'manager' %}
+             <a href="{% url 'taxi_rental_app:manager_dashboard' %}" class="btn btn-success btn-lg px-4 gap-3">Go to Manager Dashboard</a>
+        {% elif current_role == 'driver' and current_user %}
+             <a href="{% url 'taxi_rental_app:driver_dashboard' driver_name=current_user.pk %}" class="btn btn-info btn-lg px-4 gap-3">Go to Driver Dashboard</a>
+        {% elif current_role == 'client' and current_user %}
+             <a href="{% url 'taxi_rental_app:client_dashboard' client_email=current_user.pk %}" class="btn btn-warning btn-lg px-4 gap-3">Go to Client Dashboard</a>
+        {% endif %}
+      </div>
+    </div>
+  </div>
+
+  {% if not current_role %}
+  <div class="alert alert-info" role="alert">
+      <strong>Demo Note:</strong> For this demo, please use the <a href="{% url 'taxi_rental_app:login' %}" class="alert-link">Login / Select Role</a> page to choose your role and identifier. Full authentication is not implemented.
+  </div>
+  {% endif %}
+
+{% endblock %}

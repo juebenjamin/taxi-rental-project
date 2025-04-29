@@ -1,0 +1,36 @@
+{% extends 'taxi_rental_app/base.html' %}
+{% load django_bootstrap5 %}
+
+{% block title %}Register as Client{% endblock %}
+
+{% block content %}
+<h2>Register New Client Account</h2>
+<p>Please fill out the details below. You need to provide at least one address and one credit card.</p>
+
+<form method="post">
+    {% csrf_token %}
+
+    <fieldset class="mb-4 p-3 border rounded">
+        <legend class="w-auto px-2">Account Information</legend>
+        {% bootstrap_form client_form layout='horizontal' %}
+    </fieldset>
+
+    <fieldset class="mb-4 p-3 border rounded">
+        <legend class="w-auto px-2">Primary Address</legend>
+         {% bootstrap_form address_form layout='horizontal' %}
+         <small class="form-text text-muted">You can add more addresses later (feature not implemented in demo).</small>
+    </fieldset>
+
+     <fieldset class="mb-4 p-3 border rounded">
+        <legend class="w-auto px-2">Primary Credit Card</legend>
+        {% bootstrap_form cc_form layout='horizontal' %}
+         <small class="form-text text-muted">The address above will be used as the payment address for this card. You can add more cards later (feature not implemented in demo).</small>
+    </fieldset>
+
+
+    <div class="mt-3">
+        {% bootstrap_button button_type="submit" content="Register Account" %}
+        <a href="{% url 'taxi_rental_app:index' %}" class="btn btn-secondary">Cancel</a>
+    </div>
+</form>
+{% endblock %}
