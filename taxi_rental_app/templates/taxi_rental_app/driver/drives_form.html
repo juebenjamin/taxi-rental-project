@@ -1,0 +1,18 @@
+{% extends 'taxi_rental_app/base.html' %}
+{% load django_bootstrap5 %}
+
+{% block title %}Update Drivable Models{% endblock %}
+
+{% block content %}
+<h2>Update Drivable Models</h2>
+<p>Select all the car models you are certified to drive. Unchecking a model will remove your certification for it.</p>
+
+<form method="post">
+    {% csrf_token %}
+    {% bootstrap_form form %}
+    <div class="mt-3">
+        {% bootstrap_button button_type="submit" content="Update Certifications" %}
+        <a href="{% url 'taxi_rental_app:driver_dashboard' driver_name=driver.name %}" class="btn btn-secondary">Cancel</a>
+    </div>
+</form>
+{% endblock %}

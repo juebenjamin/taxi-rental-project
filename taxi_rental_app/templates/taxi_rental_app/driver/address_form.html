@@ -1,0 +1,18 @@
+{% extends 'taxi_rental_app/base.html' %}
+{% load django_bootstrap5 %}
+
+{% block title %}Update Driver Address{% endblock %}
+
+{% block content %}
+<h2>Update Your Address</h2>
+<p>Please ensure your address details are up-to-date.</p>
+
+<form method="post">
+    {% csrf_token %}
+    {% bootstrap_form form layout='horizontal' %}
+    <div class="mt-3 d-flex justify-content-end">
+        {% bootstrap_button button_type="submit" content="Update Address" %}
+        <a href="{% url 'taxi_rental_app:driver_dashboard' driver_name=driver.name %}" class="btn btn-secondary ms-2">Cancel</a>
+    </div>
+</form>
+{% endblock %}

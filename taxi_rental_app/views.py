@@ -15,7 +15,9 @@ from django.db import transaction, IntegrityError
 import django
 from django.contrib import messages
 from django.utils import timezone
-from django.http import HttpResponseForbidden, HttpResponseRedirect
+from django.core.exceptions import ValidationError
+from django.core.validators import RegexValidator
+
 
 from .models import (
     Manager,
@@ -1041,75 +1043,143 @@ def client_write_review(request, client_email, driver_name, current_user, curren
 # --- Client Registration (Example) ---
 @transaction.atomic
 def register_client(request):
-    # This is a simplified example. A real registration would involve
-    # creating the client, then redirecting to add addresses and credit cards.
     if request.method == "POST":
         client_form = ClientForm(request.POST, prefix="client")
-        address_form = AddressForm(
-            request.POST, prefix="address"
-        )  # Assuming one initial address
-        cc_form = CreditCardForm(
-            request.POST, prefix="cc", client_addresses=None
-        )  # Addresses not available yet
+        address_form = AddressForm(request.POST, prefix="address")
+        # We will handle the credit card details manually below,
+        # primarily focusing on getting the card number from the POST request initially.
 
-        if client_form.is_valid() and address_form.is_valid():  # CC validation separate
+        # Validate client and address forms first
+        if client_form.is_valid() and address_form.is_valid():
             try:
-                # 1. Save Address first (ensure it's unique or find existing)
-                address, created = Address.objects.get_or_create(
+                # 1. Save Address first (using get_or_create to handle potential duplicates)
+                address, address_created = Address.objects.get_or_create(
                     road_name=address_form.cleaned_data["road_name"],
                     number=address_form.cleaned_data["number"],
                     city=address_form.cleaned_data["city"],
                 )
 
-                # 2. Save Client
+                # 2. Save Client (might raise IntegrityError if email exists)
                 client = client_form.save()
 
-                # 3. Link Client and Address
+                # 3. Link Client and Address via the through model
                 ClientAddress.objects.create(client=client, address=address)
 
-                # 4. Handle Credit Card (needs payment address)
-                # Re-validate CC form with the created address available
-                cc_form = CreditCardForm(
-                    request.POST,
-                    prefix="cc",
-                    client_addresses=Address.objects.filter(pk=address.pk),
+                # 4. Handle Credit Card Manually for Registration
+                card_number_raw = request.POST.get(
+                    "cc-card_number"
+                )  # Get card number from POST
+
+                # Validate card number format and uniqueness
+                if not card_number_raw:
+                    raise ValidationError("Credit card number is required.")
+
+                card_validator = RegexValidator(
+                    regex=r"^\d{16}$", message="Card number must be 16 digits."
                 )
-                if cc_form.is_valid():
-                    cc = cc_form.save(commit=False)
-                    # No direct link from CC to Client in model anymore, link via ManyToMany on Client
-                    # cc.client = client # This field doesn't exist on CreditCard model directly
-                    cc.payment_addr = address  # Set payment address explicitly
+                try:
+                    card_validator(card_number_raw)  # Validate format
+
+                    # Check if card number already exists (Primary Key check)
+                    if CreditCard.objects.filter(pk=card_number_raw).exists():
+                        raise ValidationError(
+                            "A credit card with this number already exists."
+                        )
+
+                    # Create the CreditCard object, explicitly assigning the payment address
+                    cc = CreditCard(
+                        card_number=card_number_raw,
+                        payment_addr=address,  # Assign the address created/found earlier
+                    )
+                    # Perform model validation (checks, etc.) before saving
+                    cc.full_clean(
+                        exclude=["client"]
+                    )  # Exclude client field as it's linked via ManyToMany later
                     cc.save()
-                    # Add the card to the client's collection
+
+                    # Add the card to the client's ManyToMany relationship
                     client.credit_cards.add(cc)
 
+                    # If everything succeeded
                     messages.success(
                         request, f"Client '{client.name}' registered successfully!"
                     )
-                    # Log them in (mock)
+                    # Log them in (mock session)
                     set_user_role(request, "client", client.email)
                     return redirect(
                         "taxi_rental_app:client_dashboard", client_email=client.email
                     )
-                else:
-                    # Rollback transaction if CC form is invalid
-                    transaction.set_rollback(True)
-                    messages.error(request, "Credit card details are invalid.")
 
-            except IntegrityError as e:
+                except ValidationError as e:
+                    # Handle card number validation errors (format, uniqueness, or model validation)
+                    transaction.set_rollback(True)  # Rollback transaction on error
+                    # Extract specific messages if possible
+                    error_msg = "Invalid credit card details."
+                    if hasattr(e, "message_dict"):
+                        # Use Django's built-in form/model validation messages
+                        error_msg = "; ".join(
+                            [f"{k}: {v[0]}" for k, v in e.message_dict.items()]
+                        )
+                    elif hasattr(e, "message"):
+                        error_msg = e.message
+                    elif e.messages:
+                        error_msg = "; ".join(e.messages)
+
+                    messages.error(request, f"Registration failed: {error_msg}")
+                    # Fall through to re-render the form with errors below
+
+            except IntegrityError:
+                # Handle potential duplicate client email
                 messages.error(
                     request,
-                    f"Registration failed. Email might already exist or another error occurred: {e}",
+                    f"Registration failed. A client with email '{client_form.cleaned_data['email']}' might already exist.",
                 )
-                transaction.set_rollback(True)
-            except Exception as e:
-                messages.error(request, f"An unexpected error occurred: {e}")
-                transaction.set_rollback(True)
+                transaction.set_rollback(True)  # Rollback transaction
+                # Fall through to re-render the form with errors below
 
-    else:
+            except Exception as e:
+                # Catch any other unexpected errors during DB operations
+                messages.error(
+                    request, f"An unexpected error occurred during registration: {e}"
+                )
+                transaction.set_rollback(True)  # Rollback transaction
+                # Fall through to re-render the form with errors below
+
+        else:
+            # Client form or Address form is invalid
+            messages.error(
+                request,
+                "Please correct the errors in the account or address information.",
+            )
+            # Fall through to re-render the form with errors below
+
+        # --- Re-render form if POST failed validation or encountered errors ---
+        # We need to pass the forms back, including the cc_form for display consistency
+        # (even though we didn't use its full validation for payment_addr)
+        # Re-populate cc_form with POST data if available (excluding payment_addr logic)
+        cc_form_data = request.POST.copy()
+        cc_form_data.pop(
+            "cc-payment_addr", None
+        )  # Remove payment addr from data used for form
+        cc_form = CreditCardForm(
+            cc_form_data or None, prefix="cc", client_addresses=None
+        )
+
+        return render(
+            request,
+            "taxi_rental_app/registration/register_client.html",
+            {
+                "client_form": client_form,  # Contains errors if invalid
+                "address_form": address_form,  # Contains errors if invalid
+                "cc_form": cc_form,  # For display, might show card number error if format was wrong
+            },
+        )
+
+    else:  # GET Request
         client_form = ClientForm(prefix="client")
         address_form = AddressForm(prefix="address")
-        cc_form = CreditCardForm(prefix="cc", client_addresses=None)  # No addresses yet
+        # Initialize with empty queryset for payment address, as no address exists yet
+        cc_form = CreditCardForm(prefix="cc", client_addresses=None)
 
     return render(
         request,

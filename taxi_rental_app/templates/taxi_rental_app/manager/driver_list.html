@@ -1,0 +1,42 @@
+{% extends 'taxi_rental_app/base.html' %}
+{% load django_bootstrap5 %}
+
+{% block title %}Manage Drivers{% endblock %}
+
+{% block content %}
+<div class="d-flex justify-content-between align-items-center mb-3">
+    <h2>Manage Drivers</h2>
+    <a href="{% url 'taxi_rental_app:manager_driver_create' %}" class="btn btn-primary">Add New Driver</a>
+</div>
+
+{% if drivers %}
+<div class="table-responsive">
+    <table class="table table-striped table-hover">
+        <thead>
+            <tr>
+                <th>Name (Login)</th>
+                <th>Address</th>
+                <th>Actions</th>
+            </tr>
+        </thead>
+        <tbody>
+            {% for driver in drivers %}
+            <tr>
+                <td>{{ driver.name }}</td>
+                <td>{{ driver.address }}</td>
+                <td>
+                    <a href="{% url 'taxi_rental_app:manager_driver_update' pk=driver.pk %}" class="btn btn-sm btn-warning me-1">Edit Address</a>
+                    <form action="{% url 'taxi_rental_app:manager_driver_delete' pk=driver.pk %}" method="post" class="d-inline">
+                        {% csrf_token %}
+                        <button type="submit" class="btn btn-sm btn-danger" onclick="return confirm('Are you sure you want to delete driver {{ driver.name }}? This might fail if they have rents/reviews.');">Delete</button>
+                    </form>
+                </td>
+            </tr>
+            {% endfor %}
+        </tbody>
+    </table>
+</div>
+{% else %}
+<p>No drivers found.</p>
+{% endif %}
+{% endblock %}

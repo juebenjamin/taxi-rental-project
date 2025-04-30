@@ -21,10 +21,21 @@
          <small class="form-text text-muted">You can add more addresses later (feature not implemented in demo).</small>
     </fieldset>
 
-     <fieldset class="mb-4 p-3 border rounded">
+    <fieldset class="mb-4 p-3 border rounded">
         <legend class="w-auto px-2">Primary Credit Card</legend>
-        {% bootstrap_form cc_form layout='horizontal' %}
-         <small class="form-text text-muted">The address above will be used as the payment address for this card. You can add more cards later (feature not implemented in demo).</small>
+        {# Render card number field explicitly #}
+        {% bootstrap_field cc_form.card_number layout='horizontal' %}
+    
+        {# Hide the payment address field during initial registration #}
+        {# {% bootstrap_field cc_form.payment_addr layout='horizontal' %} #}
+        <div class="row mb-3">
+            <label class="col-sm-2 col-form-label">Payment Address</label>
+            <div class="col-sm-10">
+                <p class="form-control-plaintext">Will use the 'Primary Address' entered above.</p>
+            </div>
+        </div>
+    
+        <small class="form-text text-muted">You can add more cards with different addresses later (feature not implemented in demo).</small>
     </fieldset>
 
 

@@ -1,0 +1,17 @@
+{% extends 'taxi_rental_app/base.html' %}
+{% load django_bootstrap5 %}
+
+{% block title %}{{ action }} Car Model{% endblock %}
+
+{% block content %}
+<h2>{{ action }} Car Model</h2>
+
+<form method="post">
+    {% csrf_token %}
+    {% bootstrap_form form %}
+    <div class="mt-3">
+        {% bootstrap_button button_type="submit" content=action %}
+        <a href="{% url 'taxi_rental_app:manager_model_list' %}" class="btn btn-secondary">Cancel</a>
+    </div>
+</form>
+{% endblock %}

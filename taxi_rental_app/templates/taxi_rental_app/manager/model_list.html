@@ -1,0 +1,48 @@
+{% extends 'taxi_rental_app/base.html' %}
+{% load django_bootstrap5 %}
+
+{% block title %}Manage Car Models{% endblock %}
+
+{% block content %}
+<div class="d-flex justify-content-between align-items-center mb-3">
+    <h2>Manage Car Models</h2>
+    <a href="{% url 'taxi_rental_app:manager_model_create' %}" class="btn btn-primary">Add New Model</a>
+</div>
+
+{% if models %}
+<div class="table-responsive">
+    <table class="table table-striped table-hover">
+        <thead>
+            <tr>
+                <th>Brand</th>
+                <th>Model ID</th>
+                <th>Color</th>
+                <th>Year</th>
+                <th>Transmission</th>
+                <th>Actions</th>
+            </tr>
+        </thead>
+        <tbody>
+            {% for model in models %}
+            <tr>
+                <td>{{ model.car.brand }}</td>
+                <td>{{ model.model_id }}</td>
+                <td>{{ model.color }}</td>
+                <td>{{ model.construction_year }}</td>
+                <td>{{ model.get_transmission_display }}</td>
+                <td>
+                    <a href="{% url 'taxi_rental_app:manager_model_update' car_pk=model.car.pk model_pk=model.model_id %}" class="btn btn-sm btn-warning me-1">Edit</a>
+                    <form action="{% url 'taxi_rental_app:manager_model_delete' car_pk=model.car.pk model_pk=model.model_id %}" method="post" class="d-inline">
+                        {% csrf_token %}
+                        <button type="submit" class="btn btn-sm btn-danger" onclick="return confirm('Are you sure you want to delete {{ model }}? This might fail if used in rents/certifications.');">Delete</button>
+                    </form>
+                </td>
+            </tr>
+            {% endfor %}
+        </tbody>
+    </table>
+</div>
+{% else %}
+<p>No car models found. Add car brands first, then models.</p>
+{% endif %}
+{% endblock %}

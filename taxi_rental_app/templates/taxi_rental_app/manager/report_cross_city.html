@@ -1,0 +1,45 @@
+{% extends 'taxi_rental_app/base.html' %}
+{% load django_bootstrap5 %}
+
+{% block title %}Cross-City Client/Driver Report{% endblock %}
+
+{% block content %}
+<h2>Cross-City Client/Driver Report</h2>
+<p>Find clients who have an address in City C1 and have booked at least one rent with a driver whose address is in City C2.</p>
+
+<form method="get" class="row g-3 align-items-center mb-4">
+    {% bootstrap_form form layout='inline' %}
+    {% bootstrap_button button_type="submit" content="Generate Report" %}
+</form>
+
+{% if clients_data is not None %}
+    {% if clients_data %}
+        <h3>Clients Matching Criteria (C1: {{ form.city1.value|default:'[Not Set]' }}, C2: {{ form.city2.value|default:'[Not Set]' }})</h3>
+        <table class="table table-sm table-hover">
+            <thead>
+                <tr>
+                    <th>Client Name</th>
+                    <th>Email</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for client in clients_data %}
+                <tr>
+                    <td>{{ client.name }}</td>
+                    <td>{{ client.email }}</td>
+                </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    {% else %}
+         <div class="alert alert-warning" role="alert">
+           No clients found matching the specified city criteria.
+         </div>
+    {% endif %}
+{% endif %} {# End clients_data is not None check #}
+
+<div class="mt-3">
+    <a href="{% url 'taxi_rental_app:manager_dashboard' %}" class="btn btn-secondary">Back to Dashboard</a>
+</div>
+
+{% endblock %}
