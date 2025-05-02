@@ -70,10 +70,6 @@ WSGI_APPLICATION = "taxi_rental_project.wsgi.application"
 # Database
 # https://docs.djangoproject.com/en/4.2/ref/settings/#databases
 
-# Create a .env file in the BASE_DIR with:
-# DATABASE_URL=postgres://your_db_user:your_db_password@your_db_host:your_db_port/your_db_name
-# Example: DATABASE_URL=postgres://postgres:password@localhost:5433/taxi_rental
-
 import dj_database_url
 
 DATABASE_URL = os.getenv("DATABASE_URL", "sqlite:///" + str(BASE_DIR / "db.sqlite3"))

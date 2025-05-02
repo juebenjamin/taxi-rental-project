@@ -7,9 +7,6 @@ from django.db.models import (
     Q,
     Subquery,
     OuterRef,
-    F,
-    ExpressionWrapper,
-    FloatField,
 )
 from django.db import transaction, IntegrityError
 import django
@@ -27,13 +24,11 @@ from .models import (
     Car,
     Model,
     Driver,
-    Drives,
     Rent,
     Review,
     ClientAddress,
 )
 from .forms import (
-    ManagerForm,
     ClientForm,
     AddressForm,
     CreditCardForm,
@@ -625,7 +620,6 @@ def manager_report_brand_summary(request, current_user, current_role):
         Car.objects.annotate(
             # Calculate average rating of drivers who can drive *any* model of this brand
             # This requires joining Car -> Model -> Drives -> Driver -> Review
-            # Using Subquery or complex annotation might be needed. Let's try annotating Drivers first.
             avg_driver_rating_for_brand=Avg(
                 # Find ratings of drivers associated with models of this car brand
                 Review.objects.filter(
@@ -635,9 +629,6 @@ def manager_report_brand_summary(request, current_user, current_role):
                 ).values(
                     "rating"
                 )  # Get the rating values
-                # Note: This calculates the average over *all* reviews for those drivers, not just reviews related to this brand's models.
-                # A more precise (and complex) query might be needed if the requirement is stricter.
-                # For demo, this gives an idea.
             ),
             # Count total rents using models of this brand
             total_rents_for_brand=Count(
@@ -1040,7 +1031,7 @@ def client_write_review(request, client_email, driver_name, current_user, curren
     )
 
 
-# --- Client Registration (Example) ---
+# --- Client Registration ---
 @transaction.atomic
 def register_client(request):
     if request.method == "POST":
@@ -1154,9 +1145,6 @@ def register_client(request):
             # Fall through to re-render the form with errors below
 
         # --- Re-render form if POST failed validation or encountered errors ---
-        # We need to pass the forms back, including the cc_form for display consistency
-        # (even though we didn't use its full validation for payment_addr)
-        # Re-populate cc_form with POST data if available (excluding payment_addr logic)
         cc_form_data = request.POST.copy()
         cc_form_data.pop(
             "cc-payment_addr", None

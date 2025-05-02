@@ -206,9 +206,6 @@ class Rent(models.Model):
         help_text="Model used for the rent. Cannot delete model if it has been used in rents.",
     )
 
-    # Note: The UNIQUE constraints from Phase 2 (driver+date, model+date)
-    # are removed as per professor feedback. Availability logic is handled in views.
-
     def __str__(self):
         return f"Rent {self.rent_id} ({self.rent_date}) - Client: {self.client.name}, Driver: {self.driver.name}, Model: {self.model}"
 

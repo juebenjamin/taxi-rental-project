@@ -127,5 +127,5 @@ urlpatterns = [
     # Add URLs for client registration, adding addresses/cards if implementing full registration
     path(
         "register/client/", views.register_client, name="register_client"
-    ),  # Example registration
+    ),  # Registration URL
 ]
